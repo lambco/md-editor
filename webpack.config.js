@@ -12,11 +12,15 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".js", ".ts", ".xtsx"],
+    extensions: [".js", ".ts", ".tsx"],
   },
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "index.js",
     publicPath: "dist/",
+  },
+  devServer: {
+    hot: true,
+    open: true,
   },
 };
