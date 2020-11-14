@@ -2,18 +2,33 @@ import * as React from "react";
 import styled from "styled-components";
 import { useStateWithStorage } from "../hooks/use_state_with_storage";
 import * as ReactMarkdown from "react-markdown";
+import { putMemo } from "../indexeddb/memos";
+import { Button } from "../components/button";
+import { SaveModal } from "../components/save_modal";
+import { Link } from "react-router-dom";
+
+const { useState } = React;
 
 const StorageKey = "pages/editor:text";
 
 const Header = styled.header`
+  align-content: center;
+  display: flex;
   font-size: 1.5rem;
   height: 2rem;
+  justify-content: space-between;
   left: 0;
   line-hight: 2rem;
   padding: 0.5rem 1rem;
   position: fixed;
   right: 0;
   top: 0;
+`;
+
+const HeaderControl = styled.div`
+  align-content: center;
+  display: flex;
+  height: 2rem;
 `;
 
 const Wrapper = styled.div`
@@ -49,15 +64,33 @@ const Preview = styled.div`
 
 export const Editor: React.FC = () => {
   const [text, setText] = useStateWithStorage("", StorageKey);
+
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <>
-      <Header>Markdown Editor</Header>
+      <Header>
+        Markdown Editor
+        <HeaderControl>
+          <Button onClick={() => setShowModal(true)}>保存する</Button>
+          <Link to="/history">履歴を見る</Link>
+        </HeaderControl>
+      </Header>
       <Wrapper>
         <TextArea onChange={(e) => setText(e.target.value)} value={text} />
         <Preview>
           <ReactMarkdown source={text} />
         </Preview>
       </Wrapper>
+      {showModal && (
+        <SaveModal
+          onSave={(title: string): void => {
+            putMemo(title, text);
+            setShowModal(false);
+          }}
+          onCancel={() => setShowModal(false)}
+        />
+      )}
     </>
   );
 };
